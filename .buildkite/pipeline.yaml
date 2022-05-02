@@ -120,7 +120,7 @@ steps:
 # SEND NOTIFICATIONS ON BUILD COMPLETION #
 ##########################################
 notify:
-  - email: "vvoelk@seek.com.au"
+  - email: "vvoelk@p.com.au"
     if: build.branch == "staging" && build.state == "passed"
   - slack:
       message: '🚀 TERRAFORM IaC successfully deployed to Staging.'

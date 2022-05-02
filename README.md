@@ -61,7 +61,7 @@ The command example above will deploy TF code from folder **security-groups** in
 #### Deployment via Automation (Buildkite CICD pipeline)
 1. Create a feature branch and make desired code changes
 2. Push branch to remote repo and raise pull request against **staging** branch
-3. Verify the Builkdkite checks, and observe the [Buildkite](https://buildkite.com/seek-asia/siva-rc-iac) console logs.
+3. Verify the Builkdkite checks, and observe the [Buildkite](https://buildkite.com/p-asia/siva-rc-iac) console logs.
 4. Once Buildkite checks are completed and verified, merge feature branch to **staging** branch.
 5. Buildkite will deploy changes into the **hirer-staging** account.
 
@@ -71,7 +71,7 @@ The command example above will deploy TF code from folder **security-groups** in
 
 The repo manages application resources in AWS Cloud and currently IaC reflects following resources under management:
 * Hirer-Staging account (734282799255)
-    * EC2 instance fossa.jobstreet.com (subfolder: hirer-staging).
+    * EC2 instance fossa.jobp.com (subfolder: hirer-staging).
     * Application specific Security Group **siva-rc-web-sg** (subfolder: security-groups)
 
 It is recommended to use hirer-staging subfolder for any IaC snippets that are related to hirer-staging account deployment only.

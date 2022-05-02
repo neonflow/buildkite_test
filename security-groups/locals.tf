@@ -18,9 +18,7 @@ locals {
 
   tags = {
     ManagedBy             = "terraform"
-    "seek:source:url"     = "https://github.com/seekasia/siva-rc-iac"
-    "seek:owner:team"     = "fortify-migration-pilot"
-    "seek:env:production" = local.workspace["production"]
+    "p:env:production" = local.workspace["production"]
   }
 
 }
