@@ -1,3 +1,4 @@
 steps:
   - commands:
     - echo "TEST VLAD"
+    - buildkite-agent annotate --context "some_ID" --style info < README.md
