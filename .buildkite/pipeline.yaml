@@ -1,8 +1,4 @@
 steps:
   - commands:
     - echo "TEST VLAD"
-    - buildkite-agent annotate --context "some_ID" --style info < README.md
-    - sudo yum install -y yum-utils
-    - sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
-    - sudo yum -y install terraform
-    - terraform -help
+    - docker version
