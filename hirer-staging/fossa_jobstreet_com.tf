@@ -1,6 +1,6 @@
 module "fossa_jobstreet_com" {
-  #source = "../_modules/cmd-tf-aws-ec2"
-  source = "s3::https://central-terraform-modules-734282799255.s3.ap-southeast-1.amazonaws.com/beta/1.0.6/aws-ec2-ver1-.zip"
+  source = "../_modules/cmd-tf-aws-ec2"
+  #source = "s3::https://central-terraform-modules-734282799255.s3.ap-southeast-1.amazonaws.com/beta/1.0.6/aws-ec2-ver1-.zip"
 
   instance_name = "fossa.jobstreet.com"
   instance_type = "t2.large"
