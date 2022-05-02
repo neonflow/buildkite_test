@@ -8,7 +8,7 @@ export TERRAFORM_VERSION = 1.0.10
 # Get AWS account ID (active profile)
 AWS_ACCOUNT_ID=$(shell aws sts get-caller-identity --query Account --output text)
 # Backend Configuration
-BACKEND_BUCKET = "terraform-backend-512714508454"
+BACKEND_BUCKET = "terraform-backend-512714508454-terraform-backend"
 BACKEND_KEY = terraform-monorepo-starter
 BACKEND_REGION = us-east-1
 BACKEND_PROFILE = default
