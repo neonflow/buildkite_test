@@ -7,13 +7,12 @@ export TERRAFORM_VERSION = 1.0.10
 
 # Get AWS account ID (active profile)
 AWS_ACCOUNT_ID=$(shell aws sts get-caller-identity --query Account --output text)
-#AWS_ACCOUNT_ID=734282799255
 # Backend Configuration
-BACKEND_BUCKET = "pasia-migration-${AWS_ACCOUNT_ID}-terraform-backend"
+BACKEND_BUCKET = "terraform-backend-512714508454"
 BACKEND_KEY = terraform-monorepo-starter
-BACKEND_REGION = ap-southeast-1
+BACKEND_REGION = us-east-1
 BACKEND_PROFILE = default
-BACKEND_DYNAMODB_TABLE = "pasia-migration-${AWS_ACCOUNT_ID}-terraform-lock"
+BACKEND_DYNAMODB_TABLE = "terraform-backend-512714508454-terraform-lock"
 
 # BACKEND_BUCKET = cmd-p-migration-2022-terraform-backend
 # BACKEND_KEY = terraform-monorepo-starter
