@@ -1,0 +1,28 @@
+```
+Acquiring state lock. This may take a few moments...
+module.fossa_jobstreet_com.aws_instance.main: Refreshing state... [id=i-057191f87f89b2ee9]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # module.fossa_jobstreet_com.aws_instance.main will be updated in-place
+  ~ resource "aws_instance" "main" {
+        id                                   = "i-057191f87f89b2ee9"
+        tags                                 = {
+            "AWSApplicationMigrationServiceManaged"        = "mgn.amazonaws.com"
+            "AWSApplicationMigrationServiceSourceServerID" = "s-9d88fd5d9786c7326"
+            "ManagedBy"                                    = "terraform"
+            "Name"                                         = "fossa.jobstreet.com"
+            "map-migrated"                                 = "fossa.jobstreet.com"
+            "seek:auto:backup:ec2:daily"                   = "true"
+            "seek:auto:backup:ec2:weekly"                  = "true"
+            "seek:env:production"                          = "false"
+            "seek:owner:team"                              = "fortify-migration-pilot"
+            "seek:source:url"                              = "https://github.com/seekasia/siva-rc-iac"
+        }
+        # (27 unchanged attributes hidden)
+
+```

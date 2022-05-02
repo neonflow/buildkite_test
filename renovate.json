@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "ignoreDeps": [
+    "sh", "s3transfer", "tls", "github.com/cmdlabs/cmd-tf-aws-ec2", "aws", "jinja2", "cmdlabs/terraform-utils", "click", "urllib3", "six", "botocore", "python-dateutil", "python", "flemay/envvars", "boto3", "docutils", "markupsafe"
+  ]
+}

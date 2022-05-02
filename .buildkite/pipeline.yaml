@@ -1,4 +1,134 @@
+configs:
+  environments:
+    - &staging_agent_queue
+      agents:
+        queue: hirer-staging:cicd
+
+  pipelines:
+    # trigger after merge code to staging branch
+    - &staging_pipeline
+      if: |
+        build.branch == "staging"
+    
+    # trigger on feature branches pull requests to staging branch.
+    - &feature_pipeline_staging
+      if: |
+        build.pull_request.base_branch == "staging"
+
+    # trigger on feature branches
+    - &feature_pipeline
+      if: |
+        build.branch != "staging" && build.pull_request.base_branch != "staging"
+    
 steps:
-  - commands:
-    - echo "TEST VLAD"
-    - docker version
+###############################################################
+# Terraform execution - PLAN in STAGING (on feature branches) #
+###############################################################
+  
+  - label: Terraform_PLAN_hirer-staging_STAGING_Feature
+    <<: *staging_agent_queue
+    <<: *feature_pipeline
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "plan-buildkite"
+  
+  - wait:
+    <<: *feature_pipeline
+
+  - label: Terraform_PLAN_security-groups_STAGING_Feature
+    <<: *staging_agent_queue
+    <<: *feature_pipeline
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "plan-buildkite"
+
+
+##############################################################################
+# Terraform execution - PLAN in STAGING (on Pull requests to staging branch) #
+##############################################################################
+  - label: Delay_10_seconds
+    <<: *staging_agent_queue
+    <<: *feature_pipeline_staging
+    commands: 
+      - "sleep 10"
+      
+  - wait:
+    <<: *feature_pipeline_staging
+
+  - label: Terraform_PLAN_hirer-staging_STAGING
+    <<: *staging_agent_queue
+    <<: *feature_pipeline_staging
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "plan-buildkite"
+
+  - wait:
+    <<: *feature_pipeline_staging
+
+  - label: Terraform_PLAN_security-groups_STAGING
+    <<: *staging_agent_queue
+    <<: *feature_pipeline_staging
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "plan-buildkite"
+ 
+  - block: ":rocket: Approve Terraform plan?"
+    <<: *feature_pipeline_staging
+    prompt: "Approve Terraform Plan?"
+    blocked_state: running
+
+  - label: Shell_output
+    <<: *staging_agent_queue
+    <<: *feature_pipeline_staging
+    commands:
+      - echo "Pipeline run finished"
+
+##########################################################################
+# Terraform execution - APPLY in STAGING (after merge to staging branch) #
+##########################################################################
+  - label: Terraform_APPLY_STAGING
+    <<: *staging_agent_queue
+    <<: *staging_pipeline
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "applyAuto-buildkite"
+
+  - wait:
+    <<: *staging_pipeline
+
+  - label: Terraform_APPLY_STAGING
+    <<: *staging_agent_queue
+    <<: *staging_pipeline
+    command: ".buildkite/scripts/pipeline.sh"
+    env:
+      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_COMMAND: "applyAuto-buildkite"
+
+
+##########################################
+# SEND NOTIFICATIONS ON BUILD COMPLETION #
+##########################################
+notify:
+  - email: "vvoelk@seek.com.au"
+    if: build.branch == "staging" && build.state == "passed"
+  - slack:
+      message: '🚀 TERRAFORM IaC successfully deployed to Staging.'
+      channels:
+        - '#hirer-staging-terraform'
+    if: build.branch == "staging" && build.state == "passed"
+  - slack:
+      message: '!!! ERROR !!! Buildkite deployment has failed!'
+      channels:
+        - '#hirer-staging-terraform'
+    if: build.state == "failed"
