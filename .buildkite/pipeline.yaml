@@ -2,7 +2,7 @@ configs:
   environments:
     - &staging_agent_queue
       agents:
-        queue: hirer-staging:cicd
+        queue: default
 
   pipelines:
     # trigger after merge code to staging branch
