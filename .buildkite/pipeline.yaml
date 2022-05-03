@@ -31,7 +31,7 @@ steps:
     command: ".buildkite/scripts/pipeline.sh"
     env:
       TERRAFORM_ROOT_MODULE: "security-groups"
-      TERRAFORM_WORKSPACE: "hirer-main"
+      TERRAFORM_WORKSPACE: "default"
       TERRAFORM_COMMAND: "plan-buildkite"
 
 
