@@ -1,118 +1,94 @@
 configs:
   environments:
-    - &staging_agent_queue
+    - &main_agent_queue
       agents:
         queue: default
 
   pipelines:
-    # trigger after merge code to staging branch
-    - &staging_pipeline
+    # trigger after merge code to main branch
+    - &main_pipeline
       if: |
-        build.branch == "staging"
+        build.branch == "main"
     
-    # trigger on feature branches pull requests to staging branch.
-    - &feature_pipeline_staging
+    # trigger on feature branches pull requests to main branch.
+    - &feature_pipeline_main
       if: |
-        build.pull_request.base_branch == "staging"
+        build.pull_request.base_branch == "main"
 
     # trigger on feature branches
     - &feature_pipeline
       if: |
-        build.branch != "staging" && build.pull_request.base_branch != "staging"
+        build.branch != "main" && build.pull_request.base_branch != "main"
     
 steps:
 ###############################################################
-# Terraform execution - PLAN in STAGING (on feature branches) #
+# Terraform execution - PLAN in main (on feature branches) #
 ###############################################################
-  
-  - label: Terraform_PLAN_hirer-staging_STAGING_Feature
-    <<: *staging_agent_queue
-    <<: *feature_pipeline
-    command: ".buildkite/scripts/pipeline.sh"
-    env:
-      TERRAFORM_ROOT_MODULE: "hirer-staging"
-      TERRAFORM_WORKSPACE: "hirer-staging"
-      TERRAFORM_COMMAND: "plan-buildkite"
-  
-  - wait:
-    <<: *feature_pipeline
 
-  - label: Terraform_PLAN_security-groups_STAGING_Feature
-    <<: *staging_agent_queue
+  - label: Terraform_PLAN_security-groups_main_Feature
+    <<: *main_agent_queue
     <<: *feature_pipeline
     command: ".buildkite/scripts/pipeline.sh"
     env:
       TERRAFORM_ROOT_MODULE: "security-groups"
-      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "plan-buildkite"
 
 
 ##############################################################################
-# Terraform execution - PLAN in STAGING (on Pull requests to staging branch) #
+# Terraform execution - PLAN in main (on Pull requests to main branch) #
 ##############################################################################
   - label: Delay_10_seconds
-    <<: *staging_agent_queue
-    <<: *feature_pipeline_staging
+    <<: *main_agent_queue
+    <<: *feature_pipeline_main
     commands: 
       - "sleep 10"
       
   - wait:
-    <<: *feature_pipeline_staging
+    <<: *feature_pipeline_main
 
-  - label: Terraform_PLAN_hirer-staging_STAGING
-    <<: *staging_agent_queue
-    <<: *feature_pipeline_staging
-    command: ".buildkite/scripts/pipeline.sh"
-    env:
-      TERRAFORM_ROOT_MODULE: "hirer-staging"
-      TERRAFORM_WORKSPACE: "hirer-staging"
-      TERRAFORM_COMMAND: "plan-buildkite"
-
-  - wait:
-    <<: *feature_pipeline_staging
-
-  - label: Terraform_PLAN_security-groups_STAGING
-    <<: *staging_agent_queue
-    <<: *feature_pipeline_staging
+  - label: Terraform_PLAN_security-groups_main
+    <<: *main_agent_queue
+    <<: *feature_pipeline_main
     command: ".buildkite/scripts/pipeline.sh"
     env:
       TERRAFORM_ROOT_MODULE: "security-groups"
-      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "plan-buildkite"
  
   - block: ":rocket: Approve Terraform plan?"
-    <<: *feature_pipeline_staging
+    <<: *feature_pipeline_main
     prompt: "Approve Terraform Plan?"
     blocked_state: running
 
   - label: Shell_output
-    <<: *staging_agent_queue
-    <<: *feature_pipeline_staging
+    <<: *main_agent_queue
+    <<: *feature_pipeline_main
     commands:
       - echo "Pipeline run finished"
 
 ##########################################################################
-# Terraform execution - APPLY in STAGING (after merge to staging branch) #
+# Terraform execution - APPLY in main (after merge to main branch) #
 ##########################################################################
-  - label: Terraform_APPLY_STAGING
-    <<: *staging_agent_queue
-    <<: *staging_pipeline
+  - label: Terraform_APPLY_main
+    <<: *main_agent_queue
+    <<: *main_pipeline
     command: ".buildkite/scripts/pipeline.sh"
     env:
-      TERRAFORM_ROOT_MODULE: "hirer-staging"
-      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_ROOT_MODULE: "hirer-main"
+      TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "applyAuto-buildkite"
 
   - wait:
-    <<: *staging_pipeline
+    <<: *main_pipeline
 
-  - label: Terraform_APPLY_STAGING
-    <<: *staging_agent_queue
-    <<: *staging_pipeline
+  - label: Terraform_APPLY_main
+    <<: *main_agent_queue
+    <<: *main_pipeline
     command: ".buildkite/scripts/pipeline.sh"
     env:
       TERRAFORM_ROOT_MODULE: "security-groups"
-      TERRAFORM_WORKSPACE: "hirer-staging"
+      TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "applyAuto-buildkite"
 
 
@@ -121,14 +97,14 @@ steps:
 ##########################################
 notify:
   - email: "vvoelk@p.com.au"
-    if: build.branch == "staging" && build.state == "passed"
+    if: build.branch == "main" && build.state == "passed"
   - slack:
-      message: '🚀 TERRAFORM IaC successfully deployed to Staging.'
+      message: '🚀 TERRAFORM IaC successfully deployed to main.'
       channels:
-        - '#hirer-staging-terraform'
-    if: build.branch == "staging" && build.state == "passed"
+        - '#hirer-main-terraform'
+    if: build.branch == "main" && build.state == "passed"
   - slack:
       message: '!!! ERROR !!! Buildkite deployment has failed!'
       channels:
-        - '#hirer-staging-terraform'
+        - '#hirer-main-terraform'
     if: build.state == "failed"
