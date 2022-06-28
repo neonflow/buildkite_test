@@ -25,7 +25,7 @@ steps:
 # Terraform execution - PLAN in main (on feature branches) #
 ###############################################################
 
-  - label: Terraform_PLAN_security-groups_main_Feature
+  - label: Terraform_PLAN_hirer-main_Feature
     <<: *main_agent_queue
     <<: *feature_pipeline
     command: ".buildkite/scripts/pipeline.sh"
@@ -47,7 +47,7 @@ steps:
   - wait:
     <<: *feature_pipeline_main
 
-  - label: Terraform_PLAN_security-groups_main
+  - label: Terraform_PLAN_hirer-main
     <<: *main_agent_queue
     <<: *feature_pipeline_main
     command: ".buildkite/scripts/pipeline.sh"
@@ -70,18 +70,6 @@ steps:
 ##########################################################################
 # Terraform execution - APPLY in main (after merge to main branch) #
 ##########################################################################
-  - label: Terraform_APPLY_main
-    <<: *main_agent_queue
-    <<: *main_pipeline
-    command: ".buildkite/scripts/pipeline.sh"
-    env:
-      TERRAFORM_ROOT_MODULE: "hirer-main"
-      TERRAFORM_WORKSPACE: "hirer-main"
-      TERRAFORM_COMMAND: "applyAuto-buildkite"
-
-  - wait:
-    <<: *main_pipeline
-
   - label: Terraform_APPLY_main
     <<: *main_agent_queue
     <<: *main_pipeline
