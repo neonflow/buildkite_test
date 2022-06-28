@@ -28,6 +28,7 @@ resource "aws_security_group" "allow_tls_buildkite" {
   }
 
   tags = {
-    Name = "allow_tls_buildkite"
+    Name = "allow_tls_buildkite",
+    Owner = "Vlad"
   }
 }
