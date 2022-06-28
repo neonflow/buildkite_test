@@ -30,7 +30,7 @@ steps:
     <<: *feature_pipeline
     command: ".buildkite/scripts/pipeline.sh"
     env:
-      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_ROOT_MODULE: "hirer-main"
       TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "plan-buildkite"
 
@@ -52,7 +52,7 @@ steps:
     <<: *feature_pipeline_main
     command: ".buildkite/scripts/pipeline.sh"
     env:
-      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_ROOT_MODULE: "hirer-main"
       TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "plan-buildkite"
  
@@ -87,7 +87,7 @@ steps:
     <<: *main_pipeline
     command: ".buildkite/scripts/pipeline.sh"
     env:
-      TERRAFORM_ROOT_MODULE: "security-groups"
+      TERRAFORM_ROOT_MODULE: "hirer-main"
       TERRAFORM_WORKSPACE: "hirer-main"
       TERRAFORM_COMMAND: "applyAuto-buildkite"
 
@@ -96,7 +96,7 @@ steps:
 # SEND NOTIFICATIONS ON BUILD COMPLETION #
 ##########################################
 notify:
-  - email: "vvoelk@p.com.au"
+  - email: "vvoelk@cmd.com.au"
     if: build.branch == "main" && build.state == "passed"
   - slack:
       message: '🚀 TERRAFORM IaC successfully deployed to main.'
